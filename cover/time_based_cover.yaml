@@ -1,0 +1,58 @@
+substitutions:
+  cover_name: "Cover"
+  cover_output_pin: "REQUIRED_OUTPUT_PIN"
+  cover_open_switch: "REQUIRED_OPEN_SWITCH"
+  cover_close_switch: "REQUIRED_CLOSE_SWITCH"
+  cover_open_duration: "10s"
+  cover_close_duration: "10s"
+  cover_open_pcf: "REQUIRED_OPEN_PCF"
+  cover_open_pcf_pin: "REQUIRED_OPEN_PCF_PIN"
+  cover_close_pcf: "REQUIRED_CLOSE_PCF"
+  cover_close_pcf_pin: "REQUIRED_CLOSE_PCF_PIN"
+
+cover:
+  - platform: time_based
+    name: ${cover_name}
+    id: cover_${cover_output_pin}
+    open_action:
+      - switch.turn_on: ${cover_open_switch}
+    open_duration: ${cover_open_duration}
+    close_action:
+      - switch.turn_on: ${cover_close_switch}
+    close_duration: ${cover_close_duration}
+    stop_action:
+      - switch.turn_off: ${cover_open_switch}
+      - switch.turn_off: ${cover_close_switch}
+
+binary_sensor:
+  - platform: gpio
+    name: ${cover_name} Open
+    id: cover_${cover_output_pin}_open
+    pin:
+      pcf8574: ${cover_open_pcf}
+      number: ${cover_open_pcf_pin}
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - cover.open: cover_${cover_output_pin}
+    on_release:
+      then:
+        - cover.stop: cover_${cover_output_pin}
+
+  - platform: gpio
+    name: ${cover_name} Close
+    id: cover_${cover_output_pin}_close
+    pin:
+      pcf8574: ${cover_close_pcf}
+      number: ${cover_close_pcf_pin}
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - cover.close: cover_${cover_output_pin}
+    on_release:
+      then:
+        - cover.stop: cover_${cover_output_pin}
