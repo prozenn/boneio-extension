@@ -1,0 +1,44 @@
+substitutions:
+  bistable_name: "Światło"
+  bistable_output_pin: "REQUIRED_OUTPUT_PIN"
+  bistable_input_pcf: "REQUIRED_INPUT_PCF"
+  bistable_input_pin: "REQUIRED_INPUT_PIN"
+  bistable_pulse: "200ms"
+
+output:
+  - platform: template
+    id: out_${bistable_output_pin}_tpl
+    type: binary
+    write_action:
+      - if:
+          condition:
+            lambda: |-
+              const bool target = state > 0.5f;
+              return (target && !id(input_${bistable_output_pin}).state) ||
+                     (!target && id(input_${bistable_output_pin}).state);
+          then:
+            - output.turn_on: out_${bistable_output_pin}
+            - delay: ${bistable_pulse}
+            - output.turn_off: out_${bistable_output_pin}
+
+light:
+  - platform: binary
+    name: ${bistable_name}
+    id: light_${bistable_output_pin}
+    output: out_${bistable_output_pin}_tpl
+    restore_mode: RESTORE_DEFAULT_OFF
+
+binary_sensor:
+  - platform: gpio
+    id: input_${bistable_output_pin}
+    pin:
+      pcf8574: ${bistable_input_pcf}
+      number: ${bistable_input_pin}
+      mode:
+        input: true
+      inverted: true
+    on_state:
+      - lambda: |-
+          auto call = id(light_${bistable_output_pin}).make_call();
+          call.set_state(id(input_${bistable_output_pin}).state);
+          call.perform();
