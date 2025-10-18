@@ -1,0 +1,26 @@
+packages:
+  pcf_config: !include ../pcf_configuration.yaml
+
+substitutions:
+  binary_light_output: "REQUIRED_OUTPUT_PIN"
+  binary_light_input: "REQUIRED_INPUT_PIN"
+  binary_light_name: "REQUIRED_NAME"
+
+light:
+  - platform: binary
+    name: ${binary_light_name}
+    output: out_${binary_light_output}
+    id: light_${binary_light_output}
+
+binary_sensor:
+  - platform: gpio
+    id: in_${binary_light_input}
+    pin:
+      pcf8574: ${pcf_inputs[binary_light_input][0]}
+      number: ${pcf_inputs[binary_light_input][1]}
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_${binary_light_output}
