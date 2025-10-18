@@ -1,7 +1,9 @@
+packages:
+  pcf_config: !include ../pcf_configuration.yaml
+
 substitutions:
   bistable_name: "Światło"
   bistable_output_pin: "REQUIRED_OUTPUT_PIN"
-  bistable_input_pcf: "REQUIRED_INPUT_PCF"
   bistable_input_pin: "REQUIRED_INPUT_PIN"
   bistable_pulse: "200ms"
 
@@ -32,8 +34,8 @@ binary_sensor:
   - platform: gpio
     id: input_${bistable_output_pin}
     pin:
-      pcf8574: ${bistable_input_pcf}
-      number: ${bistable_input_pin}
+      pcf8574: ${pcf_inputs[bistable_input_pin][0]}
+      number: ${pcf_inputs[bistable_input_pin][1]}
       mode:
         input: true
       inverted: true

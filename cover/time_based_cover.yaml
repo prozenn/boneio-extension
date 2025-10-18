@@ -1,3 +1,6 @@
+packages:
+  pcf_config: !include ../pcf_configuration.yaml
+
 substitutions:
   cover_name: "Cover"
   cover_output_pin: "REQUIRED_OUTPUT_PIN"
@@ -5,10 +8,6 @@ substitutions:
   cover_close_switch: "REQUIRED_CLOSE_SWITCH"
   cover_open_duration: "10s"
   cover_close_duration: "10s"
-  cover_open_pcf: "REQUIRED_OPEN_PCF"
-  cover_open_pcf_pin: "REQUIRED_OPEN_PCF_PIN"
-  cover_close_pcf: "REQUIRED_CLOSE_PCF"
-  cover_close_pcf_pin: "REQUIRED_CLOSE_PCF_PIN"
 
 cover:
   - platform: time_based
@@ -28,9 +27,10 @@ binary_sensor:
   - platform: gpio
     name: ${cover_name} Open
     id: cover_${cover_output_pin}_open
+    internal: true
     pin:
-      pcf8574: ${cover_open_pcf}
-      number: ${cover_open_pcf_pin}
+      pcf8574: ${pcf_inputs[cover_output_pin][0]}
+      number: ${pcf_inputs[cover_output_pin][1]}
       mode:
         input: true
       inverted: true
@@ -44,9 +44,10 @@ binary_sensor:
   - platform: gpio
     name: ${cover_name} Close
     id: cover_${cover_output_pin}_close
+    internal: true
     pin:
-      pcf8574: ${cover_close_pcf}
-      number: ${cover_close_pcf_pin}
+      pcf8574: ${pcf_inputs_next[cover_output_pin][0]}
+      number: ${pcf_inputs_next[cover_output_pin][1]}
       mode:
         input: true
       inverted: true

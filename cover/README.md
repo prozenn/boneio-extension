@@ -7,6 +7,7 @@
 
 - Two `switch` components (for example `template`, `gpio`, or `output`-backed relays) that actually energize the cover motor in each direction.
 - PCF8574 expanders mapped to the physical "open" and "close" buttons.
+- A substitutions dictionary `pcf_inputs` that maps numeric identifiers (`"01"`, `"02"`, …) to `[pcf_id, pin]`, for example by including `pcf_configuration.yaml`.
 
 ## Substitutions
 
@@ -18,14 +19,12 @@
 | `cover_close_switch`    | yes      | —       | ID of the `switch` that energizes the motor in the close direction. |
 | `cover_open_duration`   | no       | `"10s"` | Motor run time while opening.                                       |
 | `cover_close_duration`  | no       | `"10s"` | Motor run time while closing.                                       |
-| `cover_open_pcf`        | yes      | —       | ID of the PCF8574 that reads the "open" push button.                |
-| `cover_open_pcf_pin`    | yes      | —       | Pin number on the PCF8574 for the "open" push button.               |
-| `cover_close_pcf`       | yes      | —       | ID of the PCF8574 that reads the "close" push button.               |
-| `cover_close_pcf_pin`   | yes      | —       | Pin number on the PCF8574 for the "close" push button.              |
 
 ## Example (`vars`)
 
 ```yaml
+substitutions: !include pcf_configuration.yaml
+
 packages:
   cover_01:
     url: https://github.com/prozenn/boneio-extension
@@ -39,10 +38,6 @@ packages:
           cover_close_switch: "cover_close_01_out02"
           cover_open_duration: "10s"
           cover_close_duration: "10s"
-          cover_open_pcf: "pcf_inputs_1to14"
-          cover_open_pcf_pin: "0"
-          cover_close_pcf: "pcf_inputs_1to14"
-          cover_close_pcf_pin: "1"
 ```
 
-Ensure that the referenced `switch` components and PCF8574 expanders are declared in the main ESPHome configuration, and that the wiring prevents both motor directions from being energized simultaneously.
+Ensure that the referenced `switch` components, PCF8574 expanders, and the `pcf_inputs` substitution dictionary are declared in the main ESPHome configuration, and that the wiring prevents both motor directions from being energized simultaneously.
